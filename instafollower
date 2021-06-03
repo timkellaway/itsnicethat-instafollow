@@ -1,0 +1,148 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+def insta_follower(username, password):
+
+    username = username.text()
+    password = password.text()
+
+    #supress error messages from chromedriver
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = webdriver.Chrome('/chromedriver', options=options)
+
+    driver.get('https://www.instagram.com/')
+    time.sleep(2)
+    driver.find_element_by_css_selector("input[name='username']").send_keys(username)
+    driver.find_element_by_css_selector("input[name='password']").send_keys(password)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(
+        (By.XPATH, "//button[@class='sqdOP  L3NKy   y3zKF     ']"))).click()
+    time.sleep(6)
+
+    def accept_cookies(x):
+        WebDriverWait(x, 20).until(EC.element_to_be_clickable(
+            (By.XPATH, "//button[@class='form-field-reset form-field-padding bg-sun mineshaft col-12 sans h5 left-align cursor-pointer']"))).click()
+
+    driver.get("https://www.itsnicethat.com/")
+    accept_cookies(driver)
+
+    categories = ["architecture", "art", "graphic-design", "fashion", "illustration", "photography", "product-design"]
+
+    for category in categories:
+
+        url = "https://www.itsnicethat.com/" + category
+
+        driver.get(url)
+        
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        articles = soup.find_all('article')
+
+        if not os.path.exists("/it's nice that/instas.txt"):
+            with open("/it's nice that/instas.txt", "w"):
+                pass
+
+        link_file = open("/it's nice that/instas.txt", "r")
+        link_list = link_file.readlines()
+        for link in range(len(link_list)):
+            link_list[link] = link_list[link][:-1]
+
+        for article in articles:
+
+            article_links = article.find_all(
+                'a', {"class": "block link-reset font-0 pt4 px4 sm-px4 md-px3 lg-px4"})
+
+            for entry in article_links:
+                entry_link = entry.get('href')
+                if entry_link in link_list:
+                    continue
+                else:    
+                    link_list.append(entry_link)
+
+                    driver.get("https://www.itsnicethat.com" + entry_link)
+
+                    article_content = BeautifulSoup(driver.page_source, 'html.parser')
+
+                    links = article_content.find_all('a')
+
+                    for link in links:
+                        if ("instagram" in link['href']) and ("instagram" in link.text):
+                            driver.get(link['href'])
+                            try:
+                                WebDriverWait(driver, 4).until(EC.element_to_be_clickable(
+                                    (By.XPATH, "//button[contains(.,'Follow')]"))).click()
+                            
+                                time.sleep(2)
+                            except:
+                                continue
+
+    final_file = open("/it's nice that/instas.txt", "w")
+
+    for link in link_list:
+        final_file.write(link + '\n')
+
+    link_file.close
+
+    driver.quit()
+
+from PyQt5.QtWidgets import QApplication, QLineEdit, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtGui import QPixmap
+from PyQt5 import QtCore
+import urllib
+import functools    
+
+app = QApplication([sys.argv])
+
+window = QWidget()
+window.setWindowTitle("It's Nice That Instagram Follower")
+window.setGeometry(100, 100, 280, 80)
+window.move(60, 15)
+layout = QVBoxLayout()
+
+url = 'https://22cb5366825d4ad82b47-03f948a7f19ab5419dcbf496c2527787.ssl.cf1.rackcdn.com/ItsNiceThat.png'    
+
+url_data = urllib.request.urlopen(url).read()
+pixmap = QPixmap()
+pixmap.loadFromData(url_data)
+
+image_label = QLabel()
+layout.addWidget(image_label)
+image_label.setAlignment(QtCore.Qt.AlignCenter)
+image_label.setPixmap(pixmap.scaledToWidth(280))
+
+layout.addWidget(QLabel("""<h2>It's Nice That
+Instagram Tool</h2>""", parent=window), alignment=QtCore.Qt.AlignCenter)
+
+layout.addWidget(QLabel('<h3>Follow the instagrams of the latest featured artists.</h3>', parent=window))
+
+layout.addWidget(QLabel('Instagram login details', parent=window))
+layout.addWidget(QLabel('Email address:', parent=window))
+user = QLineEdit()
+layout.addWidget(user)
+layout.addWidget(QLabel('Password:', parent=window))
+passw = QLineEdit()
+passw.setEchoMode(QLineEdit.Password)
+passw.setStyleSheet('lineedit-password-character: 9726')
+layout.addWidget(passw)
+
+x = QPushButton('OK')
+x.clicked.connect(functools.partial(insta_follower, user, passw))
+layout.addWidget(x)
+
+layout.addWidget(QLabel("""An automated browser will open and do the work for you.""", parent=window), alignment=QtCore.Qt.AlignCenter)
+
+window.setLayout(layout)
+
+window.show()
+
+sys.exit(app.exec_())
