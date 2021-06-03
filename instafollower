@@ -8,6 +8,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from subprocess import CREATE_NO_WINDOW
 import time
 
 def insta_follower(username, password):
@@ -15,10 +17,12 @@ def insta_follower(username, password):
     username = username.text()
     password = password.text()
 
-    #supress error messages from chromedriver
+    #supress error messages and console from chromedriver
+    service = Service('/chromedriver')
+    service.creationflags = CREATE_NO_WINDOW
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome('/chromedriver', options=options)
+    driver = webdriver.Chrome(options=options, service=service)
 
     driver.get('https://www.instagram.com/')
     time.sleep(2)
@@ -66,7 +70,6 @@ def insta_follower(username, password):
                 if entry_link in link_list:
                     continue
                 else:    
-                    link_list.append(entry_link)
 
                     driver.get("https://www.itsnicethat.com" + entry_link)
 
@@ -76,6 +79,7 @@ def insta_follower(username, password):
 
                     for link in links:
                         if ("instagram" in link['href']) and ("instagram" in link.text):
+                            link_list.append(link['href'])
                             driver.get(link['href'])
                             try:
                                 WebDriverWait(driver, 4).until(EC.element_to_be_clickable(
