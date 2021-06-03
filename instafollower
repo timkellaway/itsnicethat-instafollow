@@ -8,8 +8,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
-from subprocess import CREATE_NO_WINDOW
 import time
 
 def insta_follower(username, password):
@@ -18,11 +16,9 @@ def insta_follower(username, password):
     password = password.text()
 
     #supress error messages and console from chromedriver
-    service = Service('/chromedriver')
-    service.creationflags = CREATE_NO_WINDOW
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(options=options, service=service)
+    driver = webdriver.Chrome('/chromedriver', options=options)
 
     driver.get('https://www.instagram.com/')
     time.sleep(2)
