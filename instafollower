@@ -37,6 +37,15 @@ def insta_follower(username, password):
 
     categories = ["architecture", "art", "graphic-design", "fashion", "illustration", "photography", "product-design"]
 
+    if not os.path.exists("/it's nice that/instas.txt"):
+        with open("/it's nice that/instas.txt", "w"):
+            pass
+
+    link_file = open("/it's nice that/instas.txt", "r")
+    link_list = link_file.readlines()
+    for link in range(len(link_list)):
+        link_list[link] = link_list[link][:-1]
+
     for category in categories:
 
         url = "https://www.itsnicethat.com/" + category
@@ -46,15 +55,6 @@ def insta_follower(username, password):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
         articles = soup.find_all('article')
-
-        if not os.path.exists("/it's nice that/instas.txt"):
-            with open("/it's nice that/instas.txt", "w"):
-                pass
-
-        link_file = open("/it's nice that/instas.txt", "r")
-        link_list = link_file.readlines()
-        for link in range(len(link_list)):
-            link_list[link] = link_list[link][:-1]
 
         for article in articles:
 
@@ -96,12 +96,14 @@ def insta_follower(username, password):
 
 from PyQt5.QtWidgets import QApplication, QLineEdit, QPushButton, QVBoxLayout
 from PyQt5.QtWidgets import QWidget, QLabel
+import PyQt5.QtWidgets
 from PyQt5.QtGui import QPixmap
+from PyQt5 import QtGui
 from PyQt5 import QtCore
 import urllib
-import functools    
+import functools  
 
-app = QApplication([sys.argv])
+app = QApplication([])
 
 window = QWidget()
 window.setWindowTitle("It's Nice That Instagram Follower")
