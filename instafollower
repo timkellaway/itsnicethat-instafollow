@@ -47,7 +47,6 @@ def insta_follower(username, password):
         link_list[link] = link_list[link][:-1]
 
     for category in categories:
-
         url = "https://www.itsnicethat.com/" + category
 
         driver.get(url)
@@ -66,7 +65,6 @@ def insta_follower(username, password):
                 if entry_link in link_list:
                     continue
                 else:    
-
                     driver.get("https://www.itsnicethat.com" + entry_link)
 
                     article_content = BeautifulSoup(driver.page_source, 'html.parser')
