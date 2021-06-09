@@ -3,8 +3,7 @@
 
 This app automatically follows the Instagrams of the latest artists on ***It's Nice That***, an art and design website.
 
-A small browser will launch, login with your provided details, and automatically do the work. You don't need to intervene - it's happy to do its thing. 
-It'll close automatically when the process is done.
+A small browser will launch, login with your provided details, and automatically do the work. You don't need to intervene - it's happy to do its thing.
 
 ---------------------------------
 **NOTE THIS ONLY WORKS WITH CHROME**
