@@ -30,8 +30,8 @@ def insta_follower(username, password):
 
     def accept_cookies(x):
         WebDriverWait(x, 20).until(EC.element_to_be_clickable(
-            (By.XPATH, "//button[@class='form-field-reset form-field-padding bg-sun mineshaft col-12 sans h5 left-align cursor-pointer']"))).click()
-
+            (By.XPATH, "//*[@id='CybotCookiebotDialogBodyButtonAccept']"))).click()
+        
     driver.get("https://www.itsnicethat.com/")
     accept_cookies(driver)
 
