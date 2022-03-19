@@ -29,10 +29,12 @@ def insta_follower(username, password):
     time.sleep(6)
 
     def accept_cookies(x):
-        WebDriverWait(x, 20).until(EC.element_to_be_clickable(
-            (By.XPATH, "//*[@id='CybotCookiebotDialogBodyButtonAccept']"))).click()
-        
+        WebDriverWait(x, 6).until(EC.element_to_be_clickable(
+            (By.XPATH, "//a[@id='CybotCookiebotDialogBodyButtonAccept']"))).click()
+
+
     driver.get("https://www.itsnicethat.com/")
+    time.sleep(2)
     accept_cookies(driver)
 
     categories = ["architecture", "art", "graphic-design", "fashion", "illustration", "photography", "product-design"]
@@ -47,6 +49,7 @@ def insta_follower(username, password):
         link_list[link] = link_list[link][:-1]
 
     for category in categories:
+
         url = "https://www.itsnicethat.com/" + category
 
         driver.get(url)
@@ -64,7 +67,9 @@ def insta_follower(username, password):
                 entry_link = entry.get('href')
                 if entry_link in link_list:
                     continue
-                else:    
+                else:
+                    link_list.append(entry_link)    
+
                     driver.get("https://www.itsnicethat.com" + entry_link)
 
                     article_content = BeautifulSoup(driver.page_source, 'html.parser')
@@ -72,16 +77,19 @@ def insta_follower(username, password):
                     links = article_content.find_all('a')
 
                     for link in links:
-                        if ("instagram" in link['href']) and ("instagram" in link.text):
-                            link_list.append(link['href'])
-                            driver.get(link['href'])
-                            try:
-                                WebDriverWait(driver, 4).until(EC.element_to_be_clickable(
-                                    (By.XPATH, "//button[contains(.,'Follow')]"))).click()
-                            
-                                time.sleep(2)
-                            except:
-                                continue
+                        try:
+                            if ("instagram" in link['href']) and ("instagram" in link.text):
+                                link_list.append(link['href'])
+                                driver.get(link['href'])
+                                try:
+                                    WebDriverWait(driver, 5).until(EC.element_to_be_clickable(
+                                        (By.XPATH, "//span[contains(.,'Follow')]"))).click()
+                                
+                                    time.sleep(2)
+                                except:
+                                    break
+                        except:
+                            continue
 
     final_file = open("/it's nice that/instas.txt", "w")
 
@@ -125,7 +133,7 @@ Instagram Tool</h2>""", parent=window), alignment=QtCore.Qt.AlignCenter)
 
 layout.addWidget(QLabel('<h3>Follow the instagrams of the latest featured artists.</h3>', parent=window))
 
-layout.addWidget(QLabel('Instagram login details', parent=window))
+layout.addWidget(QLabel('<b>Instagram login details</b>', parent=window))
 layout.addWidget(QLabel('Email address:', parent=window))
 user = QLineEdit()
 layout.addWidget(user)
